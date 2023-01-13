@@ -1,0 +1,173 @@
+body {
+    margin: 0px;
+}
+
+.full-page {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Canvas */
+
+.canvas-container {
+    background-color: grey;
+    width: 70%;
+    /* height: 70%; */
+}
+
+canvas {
+    /*     background:
+	linear-gradient(135deg, transparent 75%, rgb(216, 216, 216) 0%) 0 0,
+	linear-gradient(-45deg, transparent 75%, rgb(216, 216, 216) 0%) 15px 15px,
+	linear-gradient(135deg, transparent 75%, rgb(216, 216, 216) 0%) 15px 15px,
+	linear-gradient(-45deg, transparent 75%, rgb(216, 216, 216) 0%) 0 0,
+    white;
+    background-size: 30px 30px; */
+    /* background-repeat: round; */
+    background-image: repeating-linear-gradient(-45deg, white, white 5px, rgb(216, 216, 216) 5px, rgb(216, 216, 216) 10px);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    /*     cursor: none; */
+    /* z-index: 100; */
+    /* transition: all 1s; */
+    /*     width: 30%; */
+}
+
+#tempCanvas {
+    position: absolute;
+    /* z-index: 1; */
+    border: 5px solid rgb(209, 61, 35);
+}
+
+/* Toolbox */
+
+.sidebarLeft {
+    background-color: black;
+    width: 10%;
+}
+
+.palette {
+    margin: 32px;
+    width: 128px;
+    height: 512px;
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.sidebarRight {
+    background-color: black;
+    width: 10%;
+}
+
+.toolbox {
+    margin: 8px;
+    display: flex;
+    flex-flow: column wrap;
+}
+
+.undoredo {
+    display: flex;
+    justify-content: flex-start;
+}
+
+    .undoredo div {
+        margin: 16px;
+        user-select: none;
+        width: 100px;
+        text-align: center;
+        color: white;
+        height: 60px;
+        border-radius: 10px;
+        opacity: 1;
+    }
+
+        .undoredo div:hover {
+            opacity: 0.8;
+        }
+
+.undo-button {
+    background: rgb(212, 45, 45);
+}
+
+.redo-button {
+    background: rgb(104, 181, 233);
+}
+
+.columns {
+    display: flex;
+}
+
+/* Color Picker */
+.colors {
+    display: flex;
+}
+
+.swatch {
+    background: rgb(255, 0, 0);
+    width: 64px;
+    height: 64px;
+}
+
+/*
+.back-swatch {
+    background: rgb(255, 255, 255);
+    width: 64px;
+    height: 64px;
+}
+*/
+
+/* Tools */
+
+h4 {
+    text-align: center;
+    margin: 0px;
+}
+
+.tools {
+    display: flex;
+    justify-content: flex-start;
+    flex-flow: column wrap;
+    margin: 16px;
+}
+
+.tool {
+    background: rgb(105, 76, 212);
+    user-select: none;
+    width: 100px;
+    text-align: center;
+    color: white;
+    height: 60px;
+    border-radius: 10px;
+    opacity: 1;
+}
+
+    .tool:hover {
+        opacity: 0.8;
+    }
+
+/* Modes */
+
+.modes {
+    display: flex;
+    justify-content: flex-start;
+    flex-flow: column wrap;
+    margin: 16px;
+}
+
+.mode {
+    background: rgb(37, 0, 139);
+    user-select: none;
+    width: 100px;
+    text-align: center;
+    color: white;
+    height: 60px;
+    border-radius: 10px;
+    opacity: 1;
+}
+
+    .mode:hover {
+        opacity: 0.8;
+    }
