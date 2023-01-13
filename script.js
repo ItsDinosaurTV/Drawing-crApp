@@ -85,6 +85,11 @@ onScreenCVS.addEventListener('mousedown', handleMouseDown);
 onScreenCVS.addEventListener('mouseup', handleMouseUp);
 onScreenCVS.addEventListener('mouseout', handleMouseOut);
 
+onScreenCVS.addEventListener("touchmove", handleMouseMove, false);
+onScreenCVS.addEventListener("touchstart", handleMouseDown, false);
+onScreenCVS.addEventListener("touchend", handleMouseUp, false);
+onScreenCVS.addEventListener("touchcancel", handleMouseUp, false);
+
 //Add event listeners for the toolbox
 undoBtn.addEventListener('click', handleUndo);
 redoBtn.addEventListener('click', handleRedo);
