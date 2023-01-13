@@ -148,11 +148,28 @@ function setBrushColor(i) {
     selectedSwatch = element;
 }
 
+function getCoordinates(event) {
+    if (event.type.startsWith("touch")) {
+        return {
+            x: event.touches[0].clientX,
+            y: event.touches[0].clientY
+        }
+    } else {
+        return {
+            x: event.offsetX,
+            y: event.offsetY
+        }
+    }
+}
+
 function handleMouseMove(e) {
+    e.preventDefault();
 
     let trueRatio = onScreenCVS.offsetWidth / offScreenCVS.width;
-    let mouseX = Math.floor(e.offsetX / trueRatio);
-    let mouseY = Math.floor(e.offsetY / trueRatio);
+    var coordinates = getCoordinates(event);
+    let mouseX = Math.floor(coordinates.x / trueRatio);
+    let mouseY = Math.floor(coordinates.y / trueRatio);
+
     //Hover brush
     let ratio = ocWidth / offScreenCVS.width;
     let onX = mouseX * ratio;
@@ -294,10 +311,15 @@ function handleMouseMove(e) {
 }
 
 function handleMouseDown(e) {
+    e.preventDefault();
+
     clicked = true;
+
     let trueRatio = onScreenCVS.offsetWidth / offScreenCVS.width;
-    let mouseX = Math.floor(e.offsetX / trueRatio);
-    let mouseY = Math.floor(e.offsetY / trueRatio);
+    var coordinates = getCoordinates(event);
+    let mouseX = Math.floor(coordinates.x / trueRatio);
+    let mouseY = Math.floor(coordinates.y / trueRatio);
+
     switch (toolType) {
         case "picker":
             //set color
@@ -357,11 +379,15 @@ function handleMouseDown(e) {
 }
 
 function handleMouseUp(e) {
+    e.preventDefault();
+
     clicked = false;
-    // randomizeColor();
+
     let trueRatio = onScreenCVS.offsetWidth / offScreenCVS.width;
-    let mouseX = Math.floor(e.offsetX / trueRatio);
-    let mouseY = Math.floor(e.offsetY / trueRatio);
+    var coordinates = getCoordinates(event);
+    let mouseX = Math.floor(coordinates.x / trueRatio);
+    let mouseY = Math.floor(coordinates.y / trueRatio);
+
     //draw line if line tool
     switch (toolType) {
         case "line":
