@@ -50,16 +50,16 @@ canvas {
 }
 
 .palette {
-    margin: 32px;
-    width: 128px;
-    height: 512px;
+    margin: 5%;
+    width: 90%;
+    height: 90%;
     display: flex;
     flex-flow: column wrap;
 }
 
 .sidebarRight {
     background-color: black;
-    width: 10%;
+    width: 20%;
 }
 
 .toolbox {
@@ -107,8 +107,8 @@ canvas {
 
 .swatch {
     background: rgb(255, 0, 0);
-    width: 64px;
-    height: 64px;
+    width: 50%;
+    height: 12%;
 }
 
 /*
@@ -150,6 +150,7 @@ h4 {
 
 /* Modes */
 
+/*
 .modes {
     display: flex;
     justify-content: flex-start;
@@ -171,3 +172,4 @@ h4 {
     .mode:hover {
         opacity: 0.8;
     }
+    */
