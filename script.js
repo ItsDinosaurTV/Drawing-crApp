@@ -94,16 +94,16 @@ let toolLayer = 1;
 
 //Add event listeners for the mouse moving, downclick, and upclick
 // used to be drawArea.addEventListener but is there a benefit to restricting buttons to just the canvas?
-addEventListener('mousemove', handleMouseMove);
-addEventListener('mousedown', handleMouseDown);
-addEventListener('mouseup', handleMouseUp);
+drawArea.addEventListener('mousemove', handleMouseMove);
+drawArea.addEventListener('mousedown', handleMouseDown);
+drawArea.addEventListener('mouseup', handleMouseUp);
 //onScreenCVS.addEventListener('mouseover', handleMouseOver);
 //onScreenCVS.addEventListener('mouseout', handleMouseOut);
 
-addEventListener("touchmove", handleMouseMove, false);
-addEventListener("touchstart", handleMouseDown, false);
-addEventListener("touchend", handleMouseUp, false);
-addEventListener("touchcancel", handleMouseUp, false);
+drawArea.addEventListener("touchmove", handleMouseMove, false);
+drawArea.addEventListener("touchstart", handleMouseDown, false);
+drawArea.addEventListener("touchend", handleMouseUp, false);
+drawArea.addEventListener("touchcancel", handleMouseUp, false);
 
 //Add event listeners for the toolbox
 undoBtn.addEventListener('click', handleUndo);
@@ -257,10 +257,10 @@ function getCoordinates(event) {
 
 
     if (event.type.startsWith("touch")) {
-        var rect = event.target.getBoundingClientRect(); // why is touch stupid augh
+        //var rect = event.target.getBoundingClientRect(); // why is touch stupid augh
 
-        coords.x = event.touches[0].pageX - rect.left;
-        coords.y = event.touches[0].pageY - rect.top;
+        coords.x = event.touches[0].pageX;// - rect.left;
+        coords.y = event.touches[0].pageY;// - rect.top;
     } else {
         coords.x = event.pageX;
         coords.y = event.pageY;
@@ -279,7 +279,7 @@ function getCoordinates(event) {
 }
 
 function handleMouseMove(e) {
-    e.preventDefault();
+    //e.preventDefault();
 
     let mouse = getCoordinates(event);
 
@@ -463,7 +463,7 @@ function handleMouseMove(e) {
 }
 
 function handleMouseDown(e) {
-    e.preventDefault();
+    //e.preventDefault();
 
     clicked = true;
 
