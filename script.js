@@ -112,8 +112,25 @@ saveBtn.addEventListener('click', saveAsPNG);
 // palette
 let selectedSwatch;
 
+// layers
+const layers = [];
+
+addRasterLayer(); // create first layer
+
+function addRasterLayer() {
+    let layerCVS = document.createElement('canvas');
+    let layerCTX = layerCVS.getContext("2d");
+    layerCVS.width = offScreenCVS.width;
+    layerCVS.height = offScreenCVS.height;
+    let layer = { type: "raster", title: 'Layer ${layers.length + 1}', cvs: layerCVS, ctx: layerCTX, x: 0, y: 0, scale: 1, opacity: 1 }
+    layers.push(layer);
+    //renderLayersToDOM();
+}
+
+
 // temp: load colours on page load
-window.addEventListener("load", setupPalette);
+//window.addEventListener("load", setupPalette);
+setupPalette();
 
 function saveAsPNG() {
     var link = document.createElement("a");
@@ -145,8 +162,8 @@ function setBrushColor(i) {
     var actualColor = element.style.background;
 
     brushColor.color = actualColor;
-    element.style.outline = "4px double white";
-    element.style.outlineOffset = "-5px";
+    element.style.outline = "8px solid white";
+    element.style.outlineOffset = "-4px";
 
     if (selectedSwatch != element && selectedSwatch != null && typeof selectedSwatch !== "undefined") {
         selectedSwatch.style.outline = "none";
@@ -160,8 +177,10 @@ function getCoordinates(event) {
     var coords = { x: 0, y: 0 };
 
     if (event.type.startsWith("touch")) {
-        coords.x = event.touches[0].clientX;
-        coords.y = event.touches[0].clientY;
+        var rect = event.target.getBoundingClientRect(); // why is touch stupid augh
+
+        coords.x = event.touches[0].pageX - rect.left;
+        coords.y = event.touches[0].pageY - rect.top;
     } else {
         coords.x = event.offsetX;
         coords.y = event.offsetY;
@@ -399,7 +418,7 @@ function handleMouseUp(e) {
 
     /*
     let mouse = getCoordinates(event);
-
+ 
     //draw line if line tool
     switch (toolType) {
         case "line":
@@ -654,7 +673,7 @@ function actionLine(sx, sy, tx, ty, currentSize, currentColor, erase, ctx) {
 //helper for replace and fill to get color on canvas **NOT IN USE**
 function getColor(startX, startY, colorLayer) {
     let canvasColor = {};
-
+ 
     let startPos = (startY * offScreenCVS.width + startX) * 4;
     //clicked color
     canvasColor.r = colorLayer.data[startPos];
@@ -671,17 +690,17 @@ function getColor(startX, startY, colorLayer) {
 function actionFill(startX, startY, currentColor) {
     //get imageData
     let colorLayer = offScreenCTX.getImageData(0, 0, offScreenCVS.width, offScreenCVS.height);
-
+ 
     let startPos = (startY * offScreenCVS.width + startX) * 4;
-
+ 
     //clicked color
     let startR = colorLayer.data[startPos];
     let startG = colorLayer.data[startPos + 1];
     let startB = colorLayer.data[startPos + 2];
     let startA = colorLayer.data[startPos + 3];
-
+ 
     //if (currentMode === "erase") currentColor = { color: "rgba(0, 0, 0, 0)", r: 0, g: 0, b: 0, a: 0 };
-
+ 
     //exit if color is the same
     if (currentColor.r === startR && currentColor.g === startG && currentColor.b === startB && currentColor.a === startA) {
         return;
@@ -694,7 +713,7 @@ function actionFill(startX, startY, currentColor) {
         newPos = pixelStack.pop();
         x = newPos[0];
         y = newPos[1];
-
+ 
         //get current pixel position
         pixelPos = (y * offScreenCVS.width + x) * 4;
         // Go up as long as the color matches and are inside the canvas
@@ -709,9 +728,9 @@ function actionFill(startX, startY, currentColor) {
         reachRight = false;
         // Go down as long as the color matches and in inside the canvas
         while (y < offScreenCVS.height && matchStartColor(pixelPos)) {
-
+ 
             colorPixel(pixelPos);
-
+ 
             if (x > 0) {
                 if (matchStartColor(pixelPos - 4)) {
                     if (!reachLeft) {
@@ -723,7 +742,7 @@ function actionFill(startX, startY, currentColor) {
                     reachLeft = false;
                 }
             }
-
+ 
             if (x < offScreenCVS.width - 1) {
                 if (matchStartColor(pixelPos + 4)) {
                     if (!reachRight) {
@@ -738,20 +757,20 @@ function actionFill(startX, startY, currentColor) {
             y++;
             pixelPos += offScreenCVS.width * 4;
         }
-
+ 
         // offScreenCTX.putImageData(colorLayer, 0, 0);
         // source = offScreenCVS.toDataURL();
         // renderImage();
-
+ 
         if (pixelStack.length) {
             floodFill();
             // window.setTimeout(floodFill, 100);
         }
     }
-
+ 
     //render floodFill result
     offScreenCTX.putImageData(colorLayer, 0, 0);
-
+ 
     //helpers
     function matchStartColor(pixelPos) {
         let r = colorLayer.data[pixelPos];
@@ -760,7 +779,7 @@ function actionFill(startX, startY, currentColor) {
         let a = colorLayer.data[pixelPos + 3];
         return (r === startR && g === startG && b === startB && a === startA);
     }
-
+ 
     function colorPixel(pixelPos) {
         colorLayer.data[pixelPos] = currentColor.r;
         colorLayer.data[pixelPos + 1] = currentColor.g;
