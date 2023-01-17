@@ -154,6 +154,7 @@ let source = offScreenCVS.toDataURL();
 
 // keyboard shortcuts
 document.addEventListener('keydown', handleKeyDown);
+
 function handleKeyDown(e) {
     switch (e.code) {
         case "KeyZ":
@@ -279,7 +280,7 @@ function getCoordinates(event) {
 }
 
 function handleMouseMove(e) {
-    //e.preventDefault();
+    e.preventDefault();
 
     let mouse = getCoordinates(event);
 
@@ -463,7 +464,19 @@ function handleMouseMove(e) {
 }
 
 function handleMouseDown(e) {
-    //e.preventDefault();
+    e.preventDefault();
+
+    switch (e.button) {
+        case 1: // middle
+            selectEraser();
+            break;
+        case 2: // right
+            selectBrush();
+            break;
+        default:
+            //selectPencil();
+            break;
+    }
 
     clicked = true;
 
@@ -499,18 +512,6 @@ function handleMouseDown(e) {
             break;
         default:
         */
-    /*
-    var layer = 0;
-    switch (e.button) {
-        case 1: // middle
-            break;
-        case 2: // right
-            layer = 1;
-            break;
-        default:
-            break;
-    }
-    */
 
     actionDraw(mouse.x, mouse.y, toolSize, toolColor, toolErase, toolLayer);
     lastX = mouse.x;
