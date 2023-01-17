@@ -5,6 +5,8 @@ window.onbeforeunload = function () {
 */
 
 //Set onscreen canvas and its context
+let drawArea = document.getElementById("drawArea");
+
 let onScreenCVS = document.getElementById("onScreen");
 let onScreenCTX = onScreenCVS.getContext("2d");
 //improve sharpness
@@ -62,6 +64,8 @@ offScreenCVS.height = 128;
 //Create history stacks for the undo functionality
 let undoStack = [];
 let redoStack = [];
+// save undo
+let dirty = false;
 
 //Other global variables
 let lastX;
@@ -89,16 +93,16 @@ let toolType = "pencil";
 let toolLayer = 1;
 
 //Add event listeners for the mouse moving, downclick, and upclick
-onScreenCVS.addEventListener('mousemove', handleMouseMove);
-onScreenCVS.addEventListener('mousedown', handleMouseDown);
-onScreenCVS.addEventListener('mouseup', handleMouseUp);
-onScreenCVS.addEventListener('mouseover', handleMouseOver);
-onScreenCVS.addEventListener('mouseout', handleMouseOut);
+drawArea.addEventListener('mousemove', handleMouseMove);
+drawArea.addEventListener('mousedown', handleMouseDown);
+drawArea.addEventListener('mouseup', handleMouseUp);
+//onScreenCVS.addEventListener('mouseover', handleMouseOver);
+//onScreenCVS.addEventListener('mouseout', handleMouseOut);
 
-onScreenCVS.addEventListener("touchmove", handleMouseMove, false);
-onScreenCVS.addEventListener("touchstart", handleMouseDown, false);
-onScreenCVS.addEventListener("touchend", handleMouseUp, false);
-onScreenCVS.addEventListener("touchcancel", handleMouseUp, false);
+drawArea.addEventListener("touchmove", handleMouseMove, false);
+drawArea.addEventListener("touchstart", handleMouseDown, false);
+drawArea.addEventListener("touchend", handleMouseUp, false);
+drawArea.addEventListener("touchcancel", handleMouseUp, false);
 
 //Add event listeners for the toolbox
 undoBtn.addEventListener('click', handleUndo);
@@ -110,8 +114,6 @@ redoBtn.addEventListener('click', handleRedo);
 toolsCont.addEventListener('click', handleTools);
 //modesCont.addEventListener('click', handleModes);
 
-// bounds
-let outOfCanvas = false;
 
 // Save
 let saveBtn = document.getElementById("save");
@@ -175,7 +177,7 @@ function handleKeyDown(e) {
         default:
             break;
     }
-    console.log(e.code + " " + e.ctrlKey)
+    //console.log(e.code + " " + e.ctrlKey)
 }
 
 // temp: load colours on page load
@@ -259,9 +261,15 @@ function getCoordinates(event) {
         coords.x = event.touches[0].pageX - rect.left;
         coords.y = event.touches[0].pageY - rect.top;
     } else {
-        coords.x = event.offsetX;
-        coords.y = event.offsetY;
+        coords.x = event.pageX;
+        coords.y = event.pageY;
     }
+
+    // offset position by canvas position
+    var rect = onScreenCVS.getBoundingClientRect(); // maybe bad practice?
+
+    coords.x -= rect.left;
+    coords.y -= rect.top;
 
     coords.x = Math.floor(coords.x / trueRatio);
     coords.y = Math.floor(coords.y / trueRatio);
@@ -273,6 +281,8 @@ function handleMouseMove(e) {
     e.preventDefault();
 
     let mouse = getCoordinates(event);
+
+    //console.log(mouse);
 
     //Hover brush
     //let ratio = ocWidth / offScreenCVS.width;
@@ -370,43 +380,55 @@ function handleMouseMove(e) {
             if (Math.abs(mouse.x - lastX) > 1 || Math.abs(mouse.y - lastY) > 1) {
                 //add to options, only execute if "continuous line" is on
                 actionLine(lastX, lastY, mouse.x, mouse.y, toolSize, toolColor, toolErase, toolLayer);
-                points.push({
-                    startX: lastX,
-                    startY: lastY,
-                    size: toolSize,
-                    color: toolColor,
-                    erase: toolErase,
-                    tool: "line",
-                    layer: toolLayer,
-                    endX: mouse.x,
-                    endY: mouse.y,
-                });
+
+                // save undo
+                if (dirty) {
+                    points.push({
+                        startX: lastX,
+                        startY: lastY,
+                        size: toolSize,
+                        color: toolColor,
+                        erase: toolErase,
+                        tool: "line",
+                        layer: toolLayer,
+                        endX: mouse.x,
+                        endY: mouse.y,
+                    });
+                }
             } else {
                 //perfect will be option, not mode
                 //if (modeType === "perfect") {
                 //perfectPixels(mouseX, mouseY);
                 //} else {
                 actionDraw(mouse.x, mouse.y, toolSize, toolColor, toolErase, toolLayer);
-                points.push({
-                    x: mouse.x,
-                    y: mouse.y,
-                    size: toolSize,
-                    color: toolColor,
-                    erase: toolErase,
-                    tool: toolType,
-                    layer: toolLayer,
-                });
+
+                // save undo
+                if (dirty) {
+                    points.push({
+                        x: mouse.x,
+                        y: mouse.y,
+                        size: toolSize,
+                        color: toolColor,
+                        erase: toolErase,
+                        tool: toolType,
+                        layer: toolLayer,
+                    });
+                }
                 //}
             }
             //} //temp
             //source = offScreenCVS.toDataURL();
-            renderImage();
+            if (dirty) {
+                renderImage();
+            }
             //}
             // save last point
             lastX = mouse.x;
             lastY = mouse.y;
         }
     }
+    console.log(dirty);
+
     /*
     else {
         //only draw when necessary
@@ -496,25 +518,29 @@ function handleMouseDown(e) {
     //lastDrawnY = mouseY;
     //waitingPixelX = mouseX;
     //waitingPixelY = mouseY;
-    points.push({
-        x: mouse.x,
-        y: mouse.y,
-        size: toolSize,
-        color: toolColor,
-        erase: toolErase,
-        tool: toolType,
-        layer: toolLayer,
-    });
-    //source = offScreenCVS.toDataURL();
-    renderImage();
-    //}
+
+    // save undo
+    if (dirty) {
+        points.push({
+            x: mouse.x,
+            y: mouse.y,
+            size: toolSize,
+            color: toolColor,
+            erase: toolErase,
+            tool: toolType,
+            layer: toolLayer,
+        });
+        //source = offScreenCVS.toDataURL();
+        renderImage();
+        //}
+    }
 }
 
 function handleMouseUp(e) {
     e.preventDefault();
 
     clicked = false;
-    outOfCanvas = false;
+    dirty = false;
 
     /*
     let mouse = getCoordinates(event);
@@ -566,32 +592,22 @@ function handleMouseUp(e) {
     redoStack = [];
 }
 
+/*
 function handleMouseOver() {
-    if (outOfCanvas) {
-        let mouse = getCoordinates(event);
+    //if (outOfCanvas) {
+    //let mouse = getCoordinates(event);
 
-        lastX = mouse.x;
-        lastY = mouse.y;
+    //lastX = mouse.x;
+    //lastY = mouse.y;
 
-        outOfCanvas = false;
-    }
+    outOfCanvas = false;
+    //}
 }
 
 function handleMouseOut() {
     outOfCanvas = true;
-    /*
-    clicked = false;
-    //add to undo stack
-    if (points.length) {
-        undoStack.push(points);
-    }
-    points = [];
-    //Reset redostack
-    redoStack = [];
-    onScreenCTX.clearRect(0, 0, ocWidth, ocHeight);
-    drawCanvas();
-    */
 }
+*/
 
 function handleUndo() {
     if (undoStack.length > 0) {
@@ -762,18 +778,21 @@ function drawCircle(x, y, radius, newColour, erase, layer) {
 }
 
 function changePixel(x, y, newColour, erase, layer) {
-    //offScreenCTX.fillStyle = newColour;
-    layers[layer].ctx.fillStyle = newColour;
+    if (x >= 0 && x < offScreenCVS.width && y >= 0 && y < offScreenCVS.height) {
+        dirty = true;
+        //offScreenCTX.fillStyle = newColour;
+        layers[layer].ctx.fillStyle = newColour;
 
-    if (erase) {
-        //offScreenCTX.clearRect(x, y, 1, 1);
-        //layers[layer].ctx.clearRect(x, y, 1, 1);
-        layers.forEach(l => {
-            l.ctx.clearRect(x, y, 1, 1);
-        });
-    } else {
-        //offScreenCTX.fillRect(x, y, 1, 1);
-        layers[layer].ctx.fillRect(x, y, 1, 1);
+        if (erase) {
+            //offScreenCTX.clearRect(x, y, 1, 1);
+            //layers[layer].ctx.clearRect(x, y, 1, 1);
+            layers.forEach(l => {
+                l.ctx.clearRect(x, y, 1, 1);
+            });
+        } else {
+            //offScreenCTX.fillRect(x, y, 1, 1);
+            layers[layer].ctx.fillRect(x, y, 1, 1);
+        }
     }
 }
 
