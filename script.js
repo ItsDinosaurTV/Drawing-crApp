@@ -44,12 +44,14 @@ toolBtn.style.background = "rgb(192, 45, 19)";
 //let modeBtn = document.querySelector("#draw");
 //modeBtn.style.background = "rgb(192, 45, 19)";
 
+/*
 //Create an offscreen canvas. This is where we will actually be drawing, in order to keep the image consistent and free of distortions.
 let offScreenCVS = document.createElement('canvas');
 let offScreenCTX = offScreenCVS.getContext("2d");
 //Set the dimensions of the drawing canvas
-offScreenCVS.width = 64;
-offScreenCVS.height = 64;
+offScreenCVS.width = 128;
+offScreenCVS.height = 128;
+*/
 
 //Create history stacks for the undo functionality
 let undoStack = [];
@@ -75,10 +77,7 @@ let brushSize = 1;
 let brushErase = false;
 //let modeType = "draw";
 let toolType = "pencil";
-
-//Create an Image with a default source of the existing onscreen canvas
-let img = new Image;
-let source = offScreenCVS.toDataURL();
+let brushLayer = 0;
 
 //Add event listeners for the mouse moving, downclick, and upclick
 onScreenCVS.addEventListener('mousemove', handleMouseMove);
@@ -115,6 +114,34 @@ let selectedSwatch;
 // layers
 const layers = [];
 
+//Create an offscreen canvas. This is where we will actually be drawing, in order to keep the image consistent and free of distortions.
+let offScreenCVS = document.createElement('canvas');
+
+//Set the dimensions of the drawing canvas
+offScreenCVS.width = 128;
+offScreenCVS.height = 128;
+
+//layers.push(offScreenCVS.getContext("2d"));
+
+addLayer();
+addLayer();
+
+function addLayer() {
+    let layerCVS = document.createElement('canvas');
+    let layerCTX = layerCVS.getContext("2d");
+    layerCVS.width = offScreenCVS.width;
+    layerCVS.height = offScreenCVS.height;
+    let layer = { cvs: layerCVS, ctx: layerCTX, x: 0, y: 0, scale: 1, opacity: 1 }
+    layers.push(layer);
+}
+
+//Create an Image with a default source of the existing onscreen canvas
+let img = new Image;
+let source = offScreenCVS.toDataURL();
+
+
+
+/*
 addRasterLayer(); // create first layer
 
 function addRasterLayer() {
@@ -124,9 +151,49 @@ function addRasterLayer() {
     layerCVS.height = offScreenCVS.height;
     let layer = { type: "raster", title: 'Layer ${layers.length + 1}', cvs: layerCVS, ctx: layerCTX, x: 0, y: 0, scale: 1, opacity: 1 }
     layers.push(layer);
-    //renderLayersToDOM();
+    renderLayersToDOM();
 }
 
+function drawLayers() {
+    layers.forEach(l => {
+        if (l.type === "reference") {
+            onScreenCTX.save();
+            onScreenCTX.globalAlpha = l.opacity;
+            //l.x, l.y need to be normalized to the pixel grid
+            onScreenCTX.drawImage(
+                l.img,
+                state.xOffset + l.x * ocWidth / offScreenCVS.width,
+                state.yOffset + l.y * ocWidth / offScreenCVS.width,
+                l.img.width * l.scale,
+                l.img.height * l.scale
+            );
+            onScreenCTX.restore();
+        } else {
+            onScreenCTX.save();
+            onScreenCTX.globalAlpha = l.opacity;
+            //l.x, l.y need to be normalized to the pixel grid 
+            onScreenCTX.drawImage(
+                l.cvs,
+                state.xOffset + l.x * ocWidth / offScreenCVS.width,
+                state.yoffset + l.y * ocWidth / offScreenCVS.width,
+                ocWidth,
+                ocHeight
+            );
+            onScreenCTX.restore();
+        }
+    });
+}
+
+function renderLayersToDOM() {
+    layersCont.innerHTML = "";
+    layers.forEach(l => {
+        let layerElement = document.createElement("div");
+        layerElement.className = 'layer ${l.type}';
+        layerElement.textContent = l.title;
+        layersCont.appendChild(layerElement);
+    })
+}
+*/
 
 // temp: load colours on page load
 //window.addEventListener("load", setupPalette);
@@ -262,6 +329,19 @@ function handleMouseMove(e) {
             onScreenCTX.fillRect(onX, onY, ratio, ratio);
         }
         */
+        /*
+        var layer = 0;
+        switch (e.button) {
+            case 1: // middle
+                break;
+            case 2: // right
+                layer = 1;
+                break;
+            default:
+                break;
+        }
+        */
+
         if (lastX !== mouse.x || lastY !== mouse.y) {
             //draw between points when drawing fast
             /*
@@ -279,7 +359,7 @@ function handleMouseMove(e) {
                 */
             if (Math.abs(mouse.x - lastX) > 1 || Math.abs(mouse.y - lastY) > 1) {
                 //add to options, only execute if "continuous line" is on
-                actionLine(lastX, lastY, mouse.x, mouse.y, brushSize, brushColor, brushErase, offScreenCTX);
+                actionLine(lastX, lastY, mouse.x, mouse.y, brushSize, brushColor, brushErase, brushLayer);
                 points.push({
                     startX: lastX,
                     startY: lastY,
@@ -287,6 +367,7 @@ function handleMouseMove(e) {
                     color: { ...brushColor },
                     erase: brushErase,
                     tool: "line",
+                    layer: brushLayer,
                     endX: mouse.x,
                     endY: mouse.y,
                 });
@@ -295,7 +376,7 @@ function handleMouseMove(e) {
                 //if (modeType === "perfect") {
                 //perfectPixels(mouseX, mouseY);
                 //} else {
-                actionDraw(mouse.x, mouse.y, brushSize, brushColor, brushErase);
+                actionDraw(mouse.x, mouse.y, brushSize, brushColor, brushErase, brushLayer);
                 points.push({
                     x: mouse.x,
                     y: mouse.y,
@@ -303,6 +384,7 @@ function handleMouseMove(e) {
                     color: { ...brushColor },
                     erase: brushErase,
                     tool: toolType,
+                    layer: brushLayer,
                 });
                 //}
             }
@@ -381,16 +463,20 @@ function handleMouseDown(e) {
             break;
         default:
         */
+    /*
+    var layer = 0;
     switch (e.button) {
         case 1: // middle
             break;
         case 2: // right
+            layer = 1;
             break;
         default:
             break;
     }
+    */
 
-    actionDraw(mouse.x, mouse.y, brushSize, brushColor, brushErase);
+    actionDraw(mouse.x, mouse.y, brushSize, brushColor, brushErase, brushLayer);
     lastX = mouse.x;
     lastY = mouse.y;
     //lastDrawnX = mouseX;
@@ -404,6 +490,7 @@ function handleMouseDown(e) {
         color: { ...brushColor },
         erase: brushErase,
         tool: toolType,
+        layer: brushLayer,
     });
     source = offScreenCVS.toDataURL();
     renderImage();
@@ -515,17 +602,20 @@ function handleTools(e) {
 
     switch (toolType) {
         case "eraser":
-            brushSize = 3;
+            brushSize = 5;
+            brushLayer = 0;
             //brushColor.color = "rgba(0, 0, 0, 255)";
             brushErase = true;
             break;
         case "brush":
-            brushSize = 3;
+            brushSize = 5;
+            brushLayer = 0;
             //brushColor.color = "rgba(255, 0, 0, 255)";
             brushErase = false;
             break;
         default:
             brushSize = 1;
+            brushLayer = 1;
             //brushColor.color = "rgba(0, 255, 0, 255)";
             brushErase = false;
             break;
@@ -574,8 +664,9 @@ function perfectPixels(currentX, currentY) {
 */
 
 //Action functions
-function actionDraw(coordX, coordY, currentSize, currentColor, erase) {
-    offScreenCTX.fillStyle = currentColor.color;
+function actionDraw(coordX, coordY, currentSize, currentColor, erase, layer) {
+
+    //offScreenCTX.fillStyle = currentColor.color;
     /*
     switch (currentMode) {
         case "erase":
@@ -587,14 +678,14 @@ function actionDraw(coordX, coordY, currentSize, currentColor, erase) {
     //offScreenCTX.beginPath();
     //offScreenCTX.arc(coordX, coordY, 2, 0, 2 * Math.PI);
     //offScreenCTX.fill();
-    drawCircle(coordX, coordY, currentSize, currentColor, erase);
+    drawCircle(coordX, coordY, currentSize, currentColor, erase, layer);
     //        break;
     //}
 }
 
-function drawCircle(x, y, radius, newColour, erase) {
+function drawCircle(x, y, radius, newColour, erase, layer) {
     if (radius == 0) {
-        changePixel(x, y, newColour, erase);
+        changePixel(x, y, newColour, erase, layer);
         return;
     }
 
@@ -608,10 +699,10 @@ function drawCircle(x, y, radius, newColour, erase) {
         let j = Math.round(Math.sqrt(radius * radius - i * i));
         for (let k = -j; k <= j; k++) {
             //We draw all the 4 sides at the same time.
-            changePixel(x - k, y + i, newColour, erase);
-            changePixel(x - k, y - i, newColour, erase);
-            changePixel(x + i, y + k, newColour, erase);
-            changePixel(x - i, y - k, newColour, erase);
+            changePixel(x - k, y + i, newColour, erase, layer);
+            changePixel(x - k, y - i, newColour, erase, layer);
+            changePixel(x + i, y + k, newColour, erase, layer);
+            changePixel(x - i, y - k, newColour, erase, layer);
         }
     }
 
@@ -619,22 +710,29 @@ function drawCircle(x, y, radius, newColour, erase) {
     range = Math.round(radius * sinus);
     for (let i = x - range + 1; i < x + range; i++) {
         for (let j = y - range + 1; j < y + range; j++) {
-            changePixel(i, j, newColour, erase);
+            changePixel(i, j, newColour, erase, layer);
         }
     }
 }
 
-function changePixel(x, y, newColour, erase) {
+function changePixel(x, y, newColour, erase, layer) {
     //offScreenCTX.fillStyle = newColour;
+    layers[layer].ctx.fillStyle = newColour.color;
     if (erase) {
-        offScreenCTX.clearRect(x, y, 1, 1);
+        //offScreenCTX.clearRect(x, y, 1, 1);
+        //layers[layer].ctx.clearRect(x, y, 1, 1);
+        layers.forEach(l => {
+            l.ctx.clearRect(x, y, 1, 1);
+        });
     } else {
-        offScreenCTX.fillRect(x, y, 1, 1);
+        //offScreenCTX.fillRect(x, y, 1, 1);
+        layers[layer].ctx.fillRect(x, y, 1, 1);
     }
 }
 
-function actionLine(sx, sy, tx, ty, currentSize, currentColor, erase, ctx) {
-    ctx.fillStyle = currentColor.color;
+function actionLine(sx, sy, tx, ty, currentSize, currentColor, erase, layer) {
+
+    //ctx.fillStyle = currentColor.color;
     //let drawPixel = (x, y, w, h) => { return currentMode === "erase" ? ctx.clearRect(x, y, w, h) : ctx.fillRect(x, y, w, h) };
     //create triangle object
     let tri = {}
@@ -660,13 +758,13 @@ function actionLine(sx, sy, tx, ty, currentSize, currentColor, erase, ctx) {
         //drawPixel(thispoint.x * scale, // round for perfect pixels
         //    thispoint.y * scale, // thus no aliasing
         //    scale, scale); // fill in one pixel, 1x1
-        drawCircle(thispoint.x, thispoint.y, currentSize, currentColor, erase);
+        drawCircle(thispoint.x, thispoint.y, currentSize, currentColor, erase, layer);
     }
     //fill endpoint
     //drawPixel(Math.round(tx) * scale, // round for perfect pixels
     //    Math.round(ty) * scale, // thus no aliasing
     //    scale, scale); // fill in one pixel, 1x1
-    drawCircle(Math.round(tx), Math.round(ty), currentSize, currentColor, erase);
+    drawCircle(Math.round(tx), Math.round(ty), currentSize, currentColor, erase, layer);
 }
 
 /*
@@ -794,7 +892,10 @@ function actionFill(startX, startY, currentColor) {
 
 function actionUndoRedo(pushStack, popStack) {
     pushStack.push(popStack.pop());
-    offScreenCTX.clearRect(0, 0, offScreenCVS.width, offScreenCVS.height);
+    //offScreenCTX.clearRect(0, 0, offScreenCVS.width, offScreenCVS.height);
+    layers.forEach(l => {
+        l.ctx.clearRect(0, 0, offScreenCVS.width, offScreenCVS.height);
+    });
     redrawPoints();
     source = offScreenCVS.toDataURL();
     renderImage();
@@ -809,13 +910,13 @@ function redrawPoints() {
                 //    actionFill(p.x, p.y, p.color);
                 //    break;
                 case "line":
-                    actionLine(p.startX, p.startY, p.endX, p.endY, p.size, p.color, p.erase, offScreenCTX)
+                    actionLine(p.startX, p.startY, p.endX, p.endY, p.size, p.color, p.erase, p.layer)
                 default:
-                    actionDraw(p.x, p.y, p.size, p.color, p.erase);
+                    actionDraw(p.x, p.y, p.size, p.color, p.erase, p.layer);
             }
 
-        })
-    })
+        });
+    });
 }
 
 //Once the image is loaded, draw the image onto the onscreen canvas.
@@ -830,7 +931,13 @@ function renderImage() {
 function drawCanvas() {
     //Prevent blurring
     onScreenCTX.imageSmoothingEnabled = false;
-    onScreenCTX.drawImage(img, 0, 0, ocWidth, ocHeight)
+    //onScreenCTX.drawImage(img, 0, 0, ocWidth, ocHeight)
+    layers.forEach(l => {
+        onScreenCTX.save();
+        onScreenCTX.drawImage(l.cvs, 0, 0, ocWidth, ocHeight);
+        //l.clearRect(0, 0, offScreenCVS.width, offScreenCVS.height);
+        onScreenCTX.restore();
+    });
 }
 
 //Get the size of the parentNode which is subject to flexbox. Fit the square by making sure the dimensions are based on the smaller of the width and height.
