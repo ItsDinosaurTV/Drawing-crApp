@@ -93,16 +93,17 @@ let toolType = "pencil";
 let toolLayer = 1;
 
 //Add event listeners for the mouse moving, downclick, and upclick
-drawArea.addEventListener('mousemove', handleMouseMove);
-drawArea.addEventListener('mousedown', handleMouseDown);
-drawArea.addEventListener('mouseup', handleMouseUp);
+// used to be drawArea.addEventListener but is there a benefit to restricting buttons to just the canvas?
+addEventListener('mousemove', handleMouseMove);
+addEventListener('mousedown', handleMouseDown);
+addEventListener('mouseup', handleMouseUp);
 //onScreenCVS.addEventListener('mouseover', handleMouseOver);
 //onScreenCVS.addEventListener('mouseout', handleMouseOut);
 
-drawArea.addEventListener("touchmove", handleMouseMove, false);
-drawArea.addEventListener("touchstart", handleMouseDown, false);
-drawArea.addEventListener("touchend", handleMouseUp, false);
-drawArea.addEventListener("touchcancel", handleMouseUp, false);
+addEventListener("touchmove", handleMouseMove, false);
+addEventListener("touchstart", handleMouseDown, false);
+addEventListener("touchend", handleMouseUp, false);
+addEventListener("touchcancel", handleMouseUp, false);
 
 //Add event listeners for the toolbox
 undoBtn.addEventListener('click', handleUndo);
@@ -427,7 +428,7 @@ function handleMouseMove(e) {
             lastY = mouse.y;
         }
     }
-    console.log(dirty);
+    //console.log(dirty);
 
     /*
     else {
