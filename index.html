@@ -5,6 +5,14 @@
     <title>Drawing crApp</title>
     <link rel="stylesheet" href="./style.css">
 
+    <!--
+    tags$head(tags$script(HTML("
+    // Enable navigation prompt
+    window.onbeforeunload = function() {
+    return 'Your changes will be lost!';
+    };
+    "))),
+    -->
 </head>
 <body>
     <!-- partial:index.partial.html -->
@@ -30,7 +38,8 @@
             </div>
         </div>
         <div class="canvas-container">
-            <canvas id="onScreen" width="128" height="128" oncontextmenu="return false;">
+            <canvas id="onScreen" oncontextmenu="return false;">
+                <!--width="128" height="128"-->
             </canvas>
         </div>
         <div class="panelToolbox">
@@ -43,60 +52,64 @@
                         <h3>Redo</h3>
                     </div>
                 </div>
-                <div class="columns">
-                    <div class="tools">
-                        <h4>Tools</h4>
-                        <div class="tool" id="pencil">
-                            <h3>Pencil</h3>
-                        </div>
-                        <div class="tool" id="brush">
-                            <h3>Brush</h3>
-                        </div>
-                        <div class="tool" id="eraser">
-                            <h3>Eraser</h3>
-                        </div>
-                        <!--
-                        <div class="tool" id="line">
-                            <h3>Line</h3>
-                        </div>
-                        <div class="tool" id="fill">
-                            <h3>Fill</h3>
-                        </div>
-                        <div class="tool" id="picker">
-                            <h3>Picker</h3>
-                        </div>
-                        -->
+                <!--<div class="columns">-->
+                <div class="tools">
+                    <!--<h4>Tools</h4>-->
+                    <div class="tool" id="pencil">
+                        <h3>Pencil</h3>
                     </div>
-                    <div class="modes">
-                        <h4>Modes</h4>
-                        <div class="tool" id="save">
-                            <h3>Save</h3>
-                        </div>
-                        <div class="tool">
-                            layers
+                    <div class="tool" id="brush">
+                        <h3>Brush</h3>
+                    </div>
+                    <div class="tool" id="eraser">
+                        <h3>Eraser</h3>
+                    </div>
+                    <div class="save" id="save">
+                        <h3>Save</h3>
+                    </div>
+                    <!--
+                    <div class="tool" id="line">
+                        <h3>Line</h3>
+                    </div>
+                    <div class="tool" id="fill">
+                        <h3>Fill</h3>
+                    </div>
+                    <div class="tool" id="picker">
+                        <h3>Picker</h3>
+                    </div>
+                    -->
+                </div>
+                <!--
+                <div class="modes">
+                    <h4>Modes</h4>
+                    <div class="tool" id="save">
+                        <h3>Save</h3>
+                    </div>
+                    <div class="tool">
+                        layers
                             saved image wrong size
                             different settings for pencil/brush
                             keyboard commands
                             mobile interface
                             entire interface
                             are you sure you want to leave?
-                        </div>
-                        <!-- Change to option instead -->
-                        <!--
-                        <div class="mode" id="draw">
-                            <h3>Draw</h3>
-                        </div>
-                        <div class="mode" id="perfect">
-                            <h3>Perfect</h3>
-                        </div>
-                        <div class="mode" id="noncont">
-                            <h3>Non-Continuous</h3>
-                        </div>
-                        -->
-                    </div>
-                    <!-- Add option for continuous line -->
+                        </div>-->
+                <!-- Change to option instead -->
+                <!--
+                <div class="mode" id="draw">
+                    <h3>Draw</h3>
                 </div>
+                <div class="mode" id="perfect">
+                    <h3>Perfect</h3>
+                </div>
+                <div class="mode" id="noncont">
+                    <h3>Non-Continuous</h3>
+                </div>
+                -->
+                <!-- </div> -->
+                <!-- Add option for continuous line -->
             </div>
+            <!--</div>-->
         </div>
     </div>
     <!-- partial -->
