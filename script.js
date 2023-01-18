@@ -24,6 +24,7 @@ let redoBtn = document.getElementById("redo");
 //Get swatch
 //let swatch = document.querySelector(".swatch");
 //let backSwatch = document.querySelector(".back-swatch");
+
 let colorArray = [
     "#000000",
     "#7e7e7e",
@@ -42,6 +43,111 @@ let colorArray = [
     "#047e7e",
     "#06ffff"
 ];
+
+let palettes = [
+    [ // MICROSOFT WINDOWS PALETTE
+        "#000000",
+        "#7e7e7e",
+        "#bebebe",
+        "#ffffff",
+        "#7e0000",
+        "#fe0000",
+        "#047e00",
+        "#06ff04",
+        "#7e7e00",
+        "#ffff04",
+        "#00007e",
+        "#0000ff",
+        "#7e007e",
+        "#fe00ff",
+        "#047e7e",
+        "#06ffff"
+    ],
+    [ // SWEETIE 16 PALETTE
+        "#1a1c2c",
+        "#5d275d",
+        "#b13e53",
+        "#ef7d57",
+        "#ffcd75",
+        "#a7f070",
+        "#38b764",
+        "#257179",
+        "#29366f",
+        "#3b5dc9",
+        "#41a6f6",
+        "#73eff7",
+        "#f4f4f4",
+        "#94b0c2",
+        "#566c86",
+        "#333c57"
+    ],
+    [ // PICO-8 PALETTE
+        "#000000",
+        "#1D2B53",
+        "#7E2553",
+        "#008751",
+        "#AB5236",
+        "#5F574F",
+        "#C2C3C7",
+        "#FFF1E8",
+        "#FF004D",
+        "#FFA300",
+        "#FFEC27",
+        "#00E436",
+        "#29ADFF",
+        "#83769C",
+        "#FF77A8",
+        "#FFCCAA"
+    ],
+    [ // TAFFY 16 PALETTE
+        "#222533",
+        "#6275ba",
+        "#a3c0e6",
+        "#fafffc",
+        "#ffab7b",
+        "#ff6c7a",
+        "#dc435b",
+        "#3f48c2",
+        "#448de7",
+        "#2bdb72",
+        "#a7f547",
+        "#ffeb33",
+        "#f58931",
+        "#db4b3d",
+        "#a63d57",
+        "#36354d"
+    ],
+    [ // DAWNBRINGER 16 PALETTE
+        "#140c1c",
+        "#442434",
+        "#30346d",
+        "#4e4a4e",
+        "#854c30",
+        "#346524",
+        "#d04648",
+        "#757161",
+        "#597dce",
+        "#d27d2c",
+        "#8595a1",
+        "#6daa2c",
+        "#d2aa99",
+        "#6dc2ca",
+        "#dad45e",
+        "#deeed6"
+    ]
+];
+
+let swapPaletteButton = document.getElementById("swapPalette");
+swapPaletteButton.addEventListener('click', swapPalette);
+let currentPalette = 0;
+
+function swapPalette() {
+    currentPalette = (++currentPalette) % palettes.length;
+
+    colorArray = palettes[currentPalette];
+
+    setupPalette();
+}
 
 //Get tool buttons
 let toolsCont = document.querySelector(".tools");
@@ -199,7 +305,7 @@ function consolidateLayers() {
             offScreenCVS.height
         )
         offScreenCTX.restore()
-    })
+    });
 }
 
 function saveAsPNG() {
@@ -219,37 +325,47 @@ function setupPalette() {
         var element = document.getElementById(id);
 
         element.style.background = color;
-        element.addEventListener('click', function () { setToolColor(i); });
+        element.addEventListener("mousedown", function (e) { console.log(e.button); setToolColor(e.button, i); });
     }
 
-    setToolColor(0);
+    setToolColor(0, 0);
 }
 
-function setToolColor(i) {
-    var id = "swatch" + i;
-    var element = document.getElementById(id);
-    var actualColor = element.style.background;
+function setToolColor(button, i) {
 
-    switch (toolType) {
-        case "eraser":
+    switch (button) {
+        case 1: // middle
             break;
-        case "brush":
+        case 2: // right
             brushColor = i;
             break;
         default:
-            penColor = i;
+            var id = "swatch" + i;
+            var element = document.getElementById(id);
+            var actualColor = element.style.background;
+
+            switch (toolType) {
+                case "eraser":
+                    break;
+                case "brush":
+                    brushColor = i;
+                    break;
+                default:
+                    penColor = i;
+                    break;
+            }
+
+            toolColor = actualColor;
+            element.style.outline = "8px solid white";
+            element.style.outlineOffset = "-4px";
+
+            if (selectedSwatch != element && selectedSwatch != null && typeof selectedSwatch !== "undefined") {
+                selectedSwatch.style.outline = "none";
+            }
+
+            selectedSwatch = element;
             break;
     }
-
-    toolColor = actualColor;
-    element.style.outline = "8px solid white";
-    element.style.outlineOffset = "-4px";
-
-    if (selectedSwatch != element && selectedSwatch != null && typeof selectedSwatch !== "undefined") {
-        selectedSwatch.style.outline = "none";
-    }
-
-    selectedSwatch = element;
 }
 
 function getCoordinates(event) {
@@ -541,6 +657,18 @@ function handleMouseDown(e) {
 function handleMouseUp(e) {
     e.preventDefault();
 
+    switch (e.button) {
+        case 1: // middle
+            selectPencil();
+            break;
+        case 2: // right
+            selectPencil();
+            break;
+        default:
+            //selectPencil();
+            break;
+    }
+
     clicked = false;
     dirty = false;
 
@@ -598,14 +726,14 @@ function handleMouseUp(e) {
 function handleMouseOver() {
     //if (outOfCanvas) {
     //let mouse = getCoordinates(event);
-
+ 
     //lastX = mouse.x;
     //lastY = mouse.y;
-
+ 
     outOfCanvas = false;
     //}
 }
-
+ 
 function handleMouseOut() {
     outOfCanvas = true;
 }
@@ -659,7 +787,7 @@ function selectPencil() {
     toolLayer = 1;
     //toolColor = penColor;
     toolErase = false;
-    setToolColor(penColor);
+    setToolColor(0, penColor);
 }
 
 function selectBrush() {
@@ -671,7 +799,7 @@ function selectBrush() {
     toolLayer = 0;
     //toolColor = brushColor;
     toolErase = false;
-    setToolColor(brushColor);
+    setToolColor(0, brushColor);
 }
 
 function selectEraser() {
@@ -679,7 +807,7 @@ function selectEraser() {
 
     selectToolButton(toolType);
 
-    toolSize = 5;
+    toolSize = 3;
     toolLayer = 0;
     //toolColor.color = "rgba(0, 0, 0, 255)";
     toolErase = true;

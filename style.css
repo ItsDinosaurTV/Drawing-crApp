@@ -164,7 +164,7 @@ h4 {
         opacity: 0.8;
     }
 
-.save {
+.save-button {
     background: rgb(255, 76, 212);
     /*user-select: none;*/
     width: 100%;
@@ -178,7 +178,7 @@ h4 {
     /*margin: 100% 0;*/
 }
 
-    .save:hover {
+    .save-button:hover {
         opacity: 0.8;
     }
 
