@@ -26,8 +26,8 @@ canvas {
     background-repeat: round;
     /*background-image: repeating-linear-gradient(-45deg, white, white 5px, rgb(216, 216, 216) 5px, rgb(216, 216, 216) 10px);*/
     position: absolute;
-    width: 817px;
-    height: 817px;
+    width: 512px;
+    height: 512px;
     /*
     width: 40%;
     height: 0;
@@ -175,7 +175,7 @@ h4 {
     opacity: 1;
     padding-top: 30%;
     padding-bottom: 30%;
-    margin: 100% 0;
+    /*margin: 100% 0;*/
 }
 
     .save:hover {
