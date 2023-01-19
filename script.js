@@ -509,9 +509,11 @@ function setToolColor(button, i) {
             toolColor = actualColor;
             element.style.outline = "8px solid white";
             element.style.outlineOffset = "-4px";
+            element.style.zIndex = "1001";
 
             if (selectedSwatch != element && selectedSwatch != null && typeof selectedSwatch !== "undefined") {
                 selectedSwatch.style.outline = "none";
+                selectedSwatch.style.zIndex = null;
             }
 
             selectedSwatch = element;
