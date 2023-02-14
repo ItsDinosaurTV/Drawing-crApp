@@ -168,8 +168,8 @@ offScreenCVS.height = 128;
 */
 
 //Create history stacks for the undo functionality
-let undoStack = [];
-let redoStack = [];
+//let undoStack = [];
+//let redoStack = [];
 // save undo
 let dirty = false;
 
@@ -197,6 +197,8 @@ let toolErase = false;
 //let modeType = "draw";
 let toolType = "pencil";
 let toolLayer = 1;
+let replaceColor = "rgba(255, 255, 255, 255)";
+
 
 //Add event listeners for the mouse moving, downclick, and upclick
 // used to be drawArea.addEventListener but is there a benefit to restricting buttons to just the canvas?
@@ -245,12 +247,19 @@ offScreenCVS.height = 128;
 addLayer();
 addLayer();
 
+var cPushArray = new Array();
+var cStep = -1;
+var ctx;
+
+saveUndo();
+
 function addLayer() {
     let layerCVS = document.createElement('canvas');
     let layerCTX = layerCVS.getContext("2d");
     layerCVS.width = offScreenCVS.width;
     layerCVS.height = offScreenCVS.height;
     let layer = { cvs: layerCVS, ctx: layerCTX, x: 0, y: 0, scale: 1, opacity: 1 }
+
     layers.push(layer);
 }
 
@@ -294,6 +303,9 @@ setupPalette();
 
 //Draw all layers onto offscreen canvas to prepare for sampling or export
 function consolidateLayers() {
+    // Clear the entire canvas
+    offScreenCTX.clearRect(0, 0, offScreenCVS.width, offScreenCVS.height);
+
     layers.forEach((l) => {
         offScreenCTX.save()
         offScreenCTX.globalAlpha = l.opacity
@@ -308,13 +320,127 @@ function consolidateLayers() {
     });
 }
 
-function saveAsPNG() {
+async function saveAsPNG() {
     consolidateLayers();
+
+
     var link = document.createElement("a");
     link.download = "myCanvas.png";
     link.href = offScreenCVS.toDataURL();// "image/png").replace("image/png", "image/octet-stream");
     //link.href = onScreenCVS.toDataURL('image/png')
     link.click();
+
+
+    /*
+    var webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
+    var dataURL = offScreenCVS.toDataURL("image/png");
+    var base64Image = dataURL.split(',')[1];
+
+    var payload = {
+        "username": "Webhook Bot",
+        "avatar_url": "https://i.imgur.com/4uOgDYK.png",
+        "content": "AAAA",
+        "embeds": [{
+            "title": "Image from Canvas",
+            "description": "This is an embedded message.",
+            "thumbnail": {
+                "url": "attachment://canvas.png"
+            //"image": {
+            //    "url": "data:image/png;base64," + btoa(base64Image)
+            }
+        }],
+        "attachments": [{
+            "id": 0,
+            "description": "Image of a canvas",
+            "filename": "canvas.png"
+        }]
+    };
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", webhookURL, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSON.stringify(payload));
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            console.log("Image sent to Discord successfully");
+        } else {
+            console.error("Failed to send image to Discord: " + xhr.status);
+        }
+    };
+    */
+
+
+    /*
+    const webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
+    const canvasData = offScreenCVS.toDataURL();
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", webhookURL, true);
+    xhr.setRequestHeader("Content-Type", "multipart/form-data");
+
+    var payload = {
+        content: canvasData
+    };
+
+    xhr.send(JSON.stringify(payload));
+    */
+
+    /*
+    // Convert the canvas data to binary format
+    var binaryData = atob(canvasData.split(',')[1]);
+    var arrayData = new Uint8Array(binaryData.length);
+    for (var i = 0; i < binaryData.length; i++) {
+        arrayData[i] = binaryData.charCodeAt(i);
+    }
+
+    // Create the webhook request
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", webhookURL, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.send(JSON.stringify({
+        "content": "",
+        "username": "Webhook Bot",
+        "avatar_url": "",
+        "embeds": [{
+            "type": "image",
+            "title": "Canvas Image",
+            "url": canvasData,
+            "image": {
+                "url": canvasData
+            }
+        }]
+    }));
+
+    // Handle the response
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                console.log("Canvas sent to Discord successfully.");
+            } else {
+                console.error("Failed to send canvas to Discord.");
+            }
+        }
+    };
+    */
+
+    /*
+    const payload = {
+        "content": dataURL,
+    };
+
+    const response = await fetch(webhookURL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to send canvas data to Discord, status code: ${response.status}`);
+    }
+*/
 }
 
 function setupPalette() {
@@ -500,6 +626,7 @@ function handleMouseMove(e) {
                 actionLine(lastX, lastY, mouse.x, mouse.y, toolSize, toolColor, toolErase, toolLayer);
 
                 // save undo
+                /*
                 if (dirty) {
                     points.push({
                         startX: lastX,
@@ -513,6 +640,7 @@ function handleMouseMove(e) {
                         endY: mouse.y,
                     });
                 }
+                */
             } else {
                 //perfect will be option, not mode
                 //if (modeType === "perfect") {
@@ -521,6 +649,7 @@ function handleMouseMove(e) {
                 actionDraw(mouse.x, mouse.y, toolSize, toolColor, toolErase, toolLayer);
 
                 // save undo
+                /*
                 if (dirty) {
                     points.push({
                         x: mouse.x,
@@ -532,6 +661,7 @@ function handleMouseMove(e) {
                         layer: toolLayer,
                     });
                 }
+                */
                 //}
             }
             //} //temp
@@ -639,6 +769,7 @@ function handleMouseDown(e) {
 
     // save undo
     if (dirty) {
+        /*
         points.push({
             x: mouse.x,
             y: mouse.y,
@@ -648,6 +779,7 @@ function handleMouseDown(e) {
             tool: toolType,
             layer: toolLayer,
         });
+        */
         //source = offScreenCVS.toDataURL();
         renderImage();
         //}
@@ -667,6 +799,10 @@ function handleMouseUp(e) {
         default:
             //selectPencil();
             break;
+    }
+
+    if (dirty) {
+        saveUndo();
     }
 
     clicked = false;
@@ -714,12 +850,16 @@ function handleMouseUp(e) {
     */
 
     //add to undo stack
+    /*
     if (points.length) {
         undoStack.push(points);
+
+        cPushArray.push(document.getElementById('myCanvas').toDataURL());
     }
     points = [];
     //Reset redostack
     redoStack = [];
+    */
 }
 
 /*
@@ -739,15 +879,56 @@ function handleMouseOut() {
 }
 */
 
+function saveUndo() {
+    cStep++;
+    if (cStep < cPushArray.length) { cPushArray.length = cStep; }
+    let layerStates = [];
+    for (let i = 0; i < layers.length; i++) {
+        layerStates.push(layers[i].ctx.getImageData(0, 0, offScreenCVS.width, offScreenCVS.height));
+    }
+
+    cPushArray.push(layerStates);
+}
+
 function handleUndo() {
+    /*
     if (undoStack.length > 0) {
         actionUndoRedo(redoStack, undoStack);
     }
+    */
+
+    if (cStep > 0) {
+        cStep--;
+        let layerStates = cPushArray[cStep];
+        for (let i = 0; i < layers.length; i++) {
+            layers[i].ctx.putImageData(layerStates[i], 0, 0);
+        }
+        //var canvasPic = new Image();
+        //canvasPic.src = cPushArray[cStep];
+        //canvasPic.onload = function () { ctx.drawImage(canvasPic, 0, 0); }
+        renderImage();
+    }
 }
 
+
+
 function handleRedo() {
+    /*
     if (redoStack.length >= 1) {
         actionUndoRedo(undoStack, redoStack);
+    }
+    */
+
+    if (cStep < cPushArray.length - 1) {
+        cStep++;
+        let layerStates = cPushArray[cStep];
+        for (let i = 0; i < layers.length; i++) {
+            layers[i].ctx.putImageData(layerStates[i], 0, 0);
+        }
+        //var canvasPic = new Image();
+        //canvasPic.src = cPushArray[cStep];
+        //canvasPic.onload = function () { ctx.drawImage(canvasPic, 0, 0); }
+        renderImage();
     }
 }
 
@@ -767,6 +948,10 @@ function handleTools(e) {
             selectPencil();
             break;
     }
+}
+
+function clearCanvas() {
+
 }
 
 function selectToolButton(id) {
@@ -812,6 +997,18 @@ function selectEraser() {
     //toolColor.color = "rgba(0, 0, 0, 255)";
     toolErase = true;
     //setToolColor("rgba(0, 0, 0, 255)");
+}
+
+function selectReplace() {
+    toolType = "replace";
+
+    selectToolButton(toolType);
+
+    toolSize = 5;
+    toolLayer = 0;
+    //toolColor = brushColor;
+    toolErase = false;
+    setToolColor(0, brushColor);
 }
 
 /*
@@ -1085,7 +1282,7 @@ function actionFill(startX, startY, currentColor) {
 */
 
 //Helper functions
-
+/*
 function actionUndoRedo(pushStack, popStack) {
     pushStack.push(popStack.pop());
     //offScreenCTX.clearRect(0, 0, offScreenCVS.width, offScreenCVS.height);
@@ -1096,7 +1293,9 @@ function actionUndoRedo(pushStack, popStack) {
     //source = offScreenCVS.toDataURL();
     renderImage();
 }
+*/
 
+/*
 function redrawPoints() {
     //follows stored instructions to reassemble drawing. Costly, but only called upon undo/redo
     undoStack.forEach(action => {
@@ -1114,6 +1313,7 @@ function redrawPoints() {
         });
     });
 }
+*/
 
 //Once the image is loaded, draw the image onto the onscreen canvas.
 function renderImage() {
