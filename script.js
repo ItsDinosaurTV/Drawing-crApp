@@ -330,6 +330,31 @@ async function saveAsPNG() {
     //link.href = onScreenCVS.toDataURL('image/png')
     link.click();
 
+    /*
+    var webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
+    var dataURL = offScreenCVS.toDataURL("image/png");
+    var base64Image = dataURL.split(',')[1];
+
+    // Assume base64_img is the base64 image string
+    const request = require("request"); // Require the request module
+    const payload = {
+        "content": "Hello, this is another base64 image",
+        "embeds": [
+            {
+                "image": {
+                    "url": base64Image
+                }
+            }
+        ]
+    };
+    request.post(webhookURL, { json: payload }, function (error, response, body) {
+        if (error) {
+            console.error(error); // Handle error
+        } else {
+            console.log(body); // Handle success
+        }
+    });
+    */
 
     /*
     var webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
