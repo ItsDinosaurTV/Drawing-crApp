@@ -14,6 +14,7 @@ body {
     background-color: grey;
     width: 100%;
     height: 100%;
+    position: relative;
 }
 
 canvas {
@@ -49,10 +50,6 @@ canvas {
 
 .panelPalette {
     background-color: black;
-    position: absolute;
-    top: 0;
-    left: 15%;
-    width: 85%;
     height: 15%;
 }
 
@@ -65,9 +62,6 @@ canvas {
 
 .panelToolbox {
     background-color: black;
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 15%;
     height: 100%;
 }
@@ -76,6 +70,12 @@ canvas {
     margin: 1%;
     display: flex;
     flex-flow: column wrap;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 .undoredo {
