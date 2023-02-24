@@ -323,149 +323,58 @@ function consolidateLayers() {
 async function saveAsPNG() {
     consolidateLayers();
 
-
     var link = document.createElement("a");
     link.download = "myCanvas.png";
-    link.href = offScreenCVS.toDataURL();// "image/png").replace("image/png", "image/octet-stream");
-    //link.href = onScreenCVS.toDataURL('image/png')
+    //link.href = offScreenCVS.toDataURL();// "image/png").replace("image/png", "image/octet-stream");
+    link.href = onScreenCVS.toDataURL('image/png')
     link.click();
+}
 
-    /*
+const characternameInput = document.getElementById('charactername-input');
+const descriptionInput = document.getElementById('description-input');
+let submitBtn = document.getElementById("submit-button");
+submitBtn.addEventListener('click', submitWebhook);
+
+async function submitWebhook() {
+    consolidateLayers();
+
     var webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
-    var dataURL = offScreenCVS.toDataURL("image/png");
-    var base64Image = dataURL.split(',')[1];
 
-    // Assume base64_img is the base64 image string
-    const request = require("request"); // Require the request module
-    const payload = {
-        "content": "Hello, this is another base64 image",
-        "embeds": [
-            {
-                "image": {
-                    "url": base64Image
-                }
-            }
-        ]
-    };
-    request.post(webhookURL, { json: payload }, function (error, response, body) {
-        if (error) {
-            console.error(error); // Handle error
-        } else {
-            console.log(body); // Handle success
-        }
-    });
-    */
+    const charactername = characternameInput.value;
+    const description = descriptionInput.value;
+    //console.log(`Name: ${charactername}`);
+    //console.log(`Description: ${description}`);
 
-    /*
-    var webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
-    var dataURL = offScreenCVS.toDataURL("image/png");
-    var base64Image = dataURL.split(',')[1];
+    //var submissionText = `'{"content":"**${charactername}**\\n${description}"}'`;
+    var submissionText = '{"content":"**' + charactername + '**\\n' + description + '"}';
+    //var submissionText = '{"content":"Name: '+ charactername + '\\nDescription: ' + description + '"}';
 
-    var payload = {
-        "username": "Webhook Bot",
-        "avatar_url": "https://i.imgur.com/4uOgDYK.png",
-        "content": "AAAA",
-        "embeds": [{
-            "title": "Image from Canvas",
-            "description": "This is an embedded message.",
-            "thumbnail": {
-                "url": "attachment://canvas.png"
-            //"image": {
-            //    "url": "data:image/png;base64," + btoa(base64Image)
-            }
-        }],
-        "attachments": [{
-            "id": 0,
-            "description": "Image of a canvas",
-            "filename": "canvas.png"
-        }]
-    };
+    console.log(submissionText);
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", webhookURL, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify(payload));
+    offScreenCVS.toBlob(function (blob) {
+        var formData = new FormData();
+        formData.append("image", blob, "image.png");
+        formData.append("payload_json", submissionText);
+        var xhr = new XMLHttpRequest;
+        xhr.open("POST", webhookURL);
+        xhr.send(formData);
+    }, "image/png");
 
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            console.log("Image sent to Discord successfully");
-        } else {
-            console.error("Failed to send image to Discord: " + xhr.status);
-        }
-    };
-    */
+    closePopup();
+}
 
+// Get the popup panel and the button to open it
+var popup = document.getElementById("popup");
+var btnOpen = document.getElementsByTagName("button")[0];
 
-    /*
-    const webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
-    const canvasData = offScreenCVS.toDataURL();
+// Open the popup panel
+function openPopup() {
+    popup.style.display = "block";
+}
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", webhookURL, true);
-    xhr.setRequestHeader("Content-Type", "multipart/form-data");
-
-    var payload = {
-        content: canvasData
-    };
-
-    xhr.send(JSON.stringify(payload));
-    */
-
-    /*
-    // Convert the canvas data to binary format
-    var binaryData = atob(canvasData.split(',')[1]);
-    var arrayData = new Uint8Array(binaryData.length);
-    for (var i = 0; i < binaryData.length; i++) {
-        arrayData[i] = binaryData.charCodeAt(i);
-    }
-
-    // Create the webhook request
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", webhookURL, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify({
-        "content": "",
-        "username": "Webhook Bot",
-        "avatar_url": "",
-        "embeds": [{
-            "type": "image",
-            "title": "Canvas Image",
-            "url": canvasData,
-            "image": {
-                "url": canvasData
-            }
-        }]
-    }));
-
-    // Handle the response
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                console.log("Canvas sent to Discord successfully.");
-            } else {
-                console.error("Failed to send canvas to Discord.");
-            }
-        }
-    };
-    */
-
-    /*
-    const payload = {
-        "content": dataURL,
-    };
-
-    const response = await fetch(webhookURL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-        body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to send canvas data to Discord, status code: ${response.status}`);
-    }
-*/
+// Close the popup panel
+function closePopup() {
+    popup.style.display = "none";
 }
 
 function setupPalette() {
