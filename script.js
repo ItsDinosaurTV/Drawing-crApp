@@ -342,8 +342,6 @@ async function submitWebhook() {
 
     const charactername = characternameInput.value;
     const description = descriptionInput.value;
-    //console.log(`Name: ${charactername}`);
-    //console.log(`Description: ${description}`);
 
     //var submissionText = `'{"content":"**${charactername}**\\n${description}"}'`;
     var submissionText = '{"content":"**' + charactername + '**\\n' + description + '"}';
