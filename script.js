@@ -326,7 +326,7 @@ async function saveAsPNG() {
     var link = document.createElement("a");
     link.download = "myCanvas.png";
     //link.href = offScreenCVS.toDataURL();// "image/png").replace("image/png", "image/octet-stream");
-    link.href = onScreenCVS.toDataURL('image/png')
+    link.href = offScreenCVS.toDataURL('image/png')
     link.click();
 }
 
