@@ -354,7 +354,7 @@ async function submitWebhook() {
         formData.append("image", blob, "image.png");
         formData.append("payload_json", submissionText);
         var xhr = new XMLHttpRequest;
-        xhr.open("POST", '${{ secrets.SECRET_TOKEN }}');
+        xhr.open("POST", process.env.SECRET_TOKEN);
         xhr.send(formData);
     }, "image/png");
 
