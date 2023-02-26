@@ -343,7 +343,6 @@ async function submitWebhook() {
     var webhookSecret1 = "jNraNQRcDBShjxBW5s7S1Vn9wnil";
     var webhookSecret2 = "_njV2PlvCplNiD8XIucpVJRwj66WCi9VYaqH43E";
 
-    
     const charactername = characternameInput.value;
     const description = descriptionInput.value;
 
