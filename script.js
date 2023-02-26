@@ -338,7 +338,10 @@ submitBtn.addEventListener('click', submitWebhook);
 async function submitWebhook() {
     consolidateLayers();
 
-    var webhookURL = "https://discord.com/api/webhooks/1073131708347600896/Wusl4rkFauw4BV4zLqsDoe2Ujb7yrGiod-mAN8hFqrq3GRBnUQhkfzZgXRb_B_I6oaeM";
+    var webhookURL = "https://discord.com/api/webhooks/1079285596100509769/jNraNQRcDBShjxBW5s7S1Vn9wnil-_njV2PlvCplNiD8XIucpVJRwj66WCi9VYaqH43E";
+    var webhookUser = "1079285596100509769";
+    var webhookSecret1 = "jNraNQRcDBShjxBW5s7S1Vn9wnil";
+    var webhookSecret2 = "_njV2PlvCplNiD8XIucpVJRwj66WCi9VYaqH43E";
 
     const charactername = characternameInput.value;
     const description = descriptionInput.value;
@@ -354,7 +357,7 @@ async function submitWebhook() {
         formData.append("image", blob, "image.png");
         formData.append("payload_json", submissionText);
         var xhr = new XMLHttpRequest;
-        xhr.open("POST", process.env.SECRET_TOKEN);
+        xhr.open("POST", webhookURL + "/" + webhookUser + "/" + webhookSecret1 + "-" + webhookSecret2);
         xhr.send(formData);
     }, "image/png");
 
