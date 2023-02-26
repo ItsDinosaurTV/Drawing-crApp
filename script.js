@@ -338,7 +338,7 @@ submitBtn.addEventListener('click', submitWebhook);
 async function submitWebhook() {
     consolidateLayers();
 
-    var webhookURL = "https://discord.com/api/webhooks/1079285596100509769/jNraNQRcDBShjxBW5s7S1Vn9wnil-_njV2PlvCplNiD8XIucpVJRwj66WCi9VYaqH43E";
+    var webhookURL = "https://discord.com/api/webhooks/";
     var webhookUser = "1079285596100509769";
     var webhookSecret1 = "jNraNQRcDBShjxBW5s7S1Vn9wnil";
     var webhookSecret2 = "_njV2PlvCplNiD8XIucpVJRwj66WCi9VYaqH43E";
