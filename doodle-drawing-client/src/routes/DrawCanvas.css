@@ -1,0 +1,259 @@
+body {
+	margin: 0px;
+}
+
+.full-page {
+	display: flex;
+	width: 100vw;
+	height: 100vh;
+}
+
+/* Canvas */
+
+.canvas-container {
+	background-color: grey;
+	width: 100%;
+	height: 100%;
+	position: relative;
+}
+
+canvas {
+	background: linear-gradient(135deg, transparent 75%, rgb(216, 216, 216) 0%) 0 0,
+		linear-gradient(-45deg, transparent 75%, rgb(216, 216, 216) 0%) 15px 15px,
+		linear-gradient(135deg, transparent 75%, rgb(216, 216, 216) 0%) 15px 15px,
+		linear-gradient(-45deg, transparent 75%, rgb(216, 216, 216) 0%) 0 0, white;
+	background-size: 30px 30px;
+	background-repeat: round;
+	/*background-image: repeating-linear-gradient(-45deg, white, white 5px, rgb(216, 216, 216) 5px, rgb(216, 216, 216) 10px);*/
+	position: absolute;
+
+	width: min(85vw, 85vh);
+	height: min(85vw, 85vh);
+
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	/*     cursor: none; */
+	/* z-index: 100; */
+	/* transition: all 1s; */
+	/*     width: 30%; */
+}
+
+#tempCanvas {
+	position: absolute;
+	/* z-index: 1; */
+	border: 5px solid rgb(209, 61, 35);
+}
+
+/* Toolbox */
+
+.panelPalette {
+	background-color: black;
+	height: 15%;
+}
+
+.palette {
+	margin: 0.5%;
+	height: 90%;
+	display: flex;
+	flex-flow: column wrap;
+}
+
+.panelToolbox {
+	background-color: black;
+	width: 15%;
+	height: 100%;
+}
+
+.toolbox {
+	margin: 1%;
+	display: flex;
+	flex-flow: column wrap;
+}
+
+.main-container {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+.undoredo {
+	display: flex;
+	justify-content: flex-start;
+	padding-top: 20%;
+	padding-bottom: 20%;
+}
+
+.undoredo div {
+	margin: 1%;
+	user-select: none;
+	width: 50%;
+	text-align: center;
+	color: white;
+	/* height: 60px; */
+	/* border-radius: 10px;*/
+	opacity: 1;
+}
+
+.undoredo div:hover {
+	opacity: 0.8;
+}
+
+.undo-button {
+	background: rgb(212, 45, 45);
+}
+
+.redo-button {
+	background: rgb(104, 181, 233);
+}
+
+.columns {
+	display: flex;
+}
+
+/* Color Picker */
+.colors {
+	display: flex;
+}
+
+.swatch {
+	width: 12.5%;
+	height: 50%;
+}
+
+/*
+.back-swatch {
+    background: rgb(255, 255, 255);
+    width: 64px;
+    height: 64px;
+}
+*/
+
+/* Tools */
+
+h4 {
+	text-align: center;
+	margin: 0px;
+}
+
+.tools {
+	display: flex;
+	justify-content: flex-start;
+	flex-flow: column;
+	margin: 5%;
+}
+
+.tool {
+	background: rgb(105, 76, 212);
+	user-select: none;
+	width: 100%;
+	text-align: center;
+	color: white;
+	height: 50%;
+	/*border-radius: 10px;*/
+	opacity: 1;
+	padding-top: 20%;
+	padding-bottom: 20%;
+}
+
+.tool:hover {
+	opacity: 0.8;
+}
+
+.save-button {
+	background: rgb(255, 76, 212);
+	/*user-select: none;*/
+	width: 100%;
+	text-align: center;
+	color: white;
+	height: 50%;
+	/*border-radius: 10px;*/
+	opacity: 1;
+	/*
+    padding-top: 30%;
+    padding-bottom: 30%;
+        */
+	/*margin: 100% 0;*/
+}
+
+.save-button:hover {
+	opacity: 0.8;
+}
+
+/* Style for the popup panel */
+.popup {
+	display: none;
+	position: fixed;
+	z-index: 1;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	background-color: rgba(0, 0, 0, 0.4);
+	padding-top: 500px;
+}
+
+/* Style for the popup form */
+.popup form {
+	background-color: #fefefe;
+	margin: auto;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%;
+	background-color: rgb(44, 44, 44);
+}
+
+/* Style for the popup buttons */
+.popup form button {
+	margin-top: 10px;
+}
+
+/* Style for the close button */
+/*
+  .popup form button:last-child {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    margin-left: 10px;
+  }
+  */
+/* Style for the input and textarea */
+.popup form input,
+.popup form textarea {
+	background-color: #dadada;
+	font-size: 32px;
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+	border: 2px solid #ccc;
+	border-radius: 4px;
+	resize: none;
+}
+
+/* Modes */
+
+/*
+.modes {
+    display: flex;
+    justify-content: flex-start;
+    flex-flow: column wrap;
+    margin: 16px;
+}
+
+.mode {
+    background: rgb(37, 0, 139);
+    user-select: none;
+    width: 100px;
+    text-align: center;
+    color: white;
+    height: 60px;
+    border-radius: 10px;
+    opacity: 1;
+}
+
+    .mode:hover {
+        opacity: 0.8;
+    }
+    */
